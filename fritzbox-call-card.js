@@ -1,6 +1,6 @@
 /* FRITZ!Box Call Card – current call and call list (answered, dialled, missed) from the FRITZ!Box call monitor integration.
    MIT License – see LICENSE */
-const FCC_VERSION = '1.0.0';
+const FCC_VERSION = '1.0.2';
 const FCC_LANG = (h) => { const l = ((h && ((h.locale && h.locale.language) || h.language)) || 'en').slice(0, 2); return l === 'de' ? 'de' : 'en'; };
 const FCC_I18N = {
   en: { title: 'Phone', unknown: 'Unknown number', today: 'today', yesterday: 'yesterday', ringing: 'Ringing', silent: ' · phones stay silent', dialing: 'Dialling', talking: 'On a call', loading: 'Loading calls …', missed: 'missed', called: 'called', notReached: 'called, not reached', answered: 'answered', empty: 'No calls recorded yet. The list fills up from the next call on.', newMissed: (n) => `${n} missed`, nothingMissed: 'nothing missed', quietOn: (to) => `🔕 Do not disturb · phones silent until ${to}:00`, quietOff: (f, t) => `🔔 Do not disturb daily ${f}:00–${t}:00` },
@@ -52,7 +52,7 @@ class FritzboxCallCard extends HTMLElement {
     const mmss = (sec) => `${Math.floor(sec / 60)}:${String(Math.floor(sec % 60)).padStart(2, '0')}`;
     const when = (t) => { const d = new Date(t), d0 = new Date(); d0.setHours(0, 0, 0, 0); const n = Math.round((new Date(d).setHours(0, 0, 0, 0) - d0.getTime()) / 86400e3), hm = d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' }); return (n === 0 ? T.today : n === -1 ? T.yesterday : d.toLocaleDateString(loc, { weekday: 'short', day: 'numeric', month: 'numeric' })) + ' ' + hm; };
     let live = '';
-    const q = c.quiet, hr = new Date().getHours(), qon = !!q && (q.from > q.to ? hr >= q.from || hr < q.to : hr >= q.from && hr < q.to);
+    const qh = (v) => { const n = Number(v); return Number.isInteger(n) && n >= 0 && n <= 24 ? n : null; }, q = c.quiet && qh(c.quiet.from) != null && qh(c.quiet.to) != null ? { from: qh(c.quiet.from), to: qh(c.quiet.to) } : null, hr = new Date().getHours(), qon = !!q && (q.from > q.to ? hr >= q.from || hr < q.to : hr >= q.from && hr < q.to);
     if (s && !['idle', 'unavailable', 'unknown'].includes(s.state)) {
       const since = Math.max(0, (Date.now() - new Date(s.last_changed || s.last_updated).getTime()) / 1000);
       if (s.state === 'ringing') live = `<div class="lv ring"><span class="li">📞</span><div><b>${T.ringing}${qon ? T.silent : ''}</b><span>${who(nm(a.from_name), nm(a.from))}${nm(a.from_name) && nm(a.from) ? ' · ' + esc(a.from) : ''}</span></div><i>${mmss(since)}</i></div>`;

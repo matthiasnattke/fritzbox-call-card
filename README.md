@@ -12,7 +12,10 @@ The current call and a call list for the **AVM FRITZ!Box call monitor** integrat
 
 ## Installation
 
-**HACS:** HACS → ⋮ → *Custom repositories* → add this repository with type *Dashboard* → install → reload the browser.
+**HACS (recommended):** open HACS, search for **FRITZ!Box Call Card**, install it and reload the browser.
+
+If it does not show up yet: HACS → ⋮ → *Custom repositories* → add this repository with type *Dashboard* → install → reload the browser.
+
 **Manual:** copy `fritzbox-call-card.js` to `config/www/` and add `/local/fritzbox-call-card.js` as a JavaScript module resource.
 
 Requires the [FRITZ!Box call monitor integration](https://www.home-assistant.io/integrations/fritzbox_callmonitor/). The call list comes from the recorder history, so it starts with the first call after setup and reaches back as far as the recorder keeps history.
